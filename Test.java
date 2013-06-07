@@ -52,6 +52,11 @@ final class CashAccountRow
     }
 }
 
+final class CashAccountFilter
+{
+    
+}
+
 class RangeFilter
 {
     final CashAccountRow begin;
@@ -92,64 +97,59 @@ class RangeFilter
 
 public class Test
 {
-   public static void test1(RangeFilter filter, CashAccountRow [] table)
+   public static void test1()
    {
-        long start = System.nanoTime();    
-        int result = 0; 
-        for (int i = 0; i < table.length; i++)
-            if (table[i].rowInCondition(filter)) result++;
-        long elapsedTime = System.nanoTime() - start;
+        long elapsedTime = 0;
+        long result = 0; 
+        System.out.println("========== Test1 ==========");
+        long fullStart = System.nanoTime();
+        for ( int z = 0; z < 100; z++ ) {
+
+            Runtime.getRuntime().gc();
+            CashAccountRow [] table = CashAccountRow.generateTable (10000000);
+            RangeFilter filter = RangeFilter.generateRangeFilter();
+            long start = System.nanoTime();    
+            
+            for (int i = 0; i < table.length; i++)
+                if (table[i].rowInCondition(filter)) result++;
+
+            elapsedTime += System.nanoTime() - start;
+            if (z % 10 == 0 && z > 0)
+                System.out.print("" + z + "%....");
+        }
+
         System.out.println("Result = " + result);
-        System.out.println("Elapsed time = " + elapsedTime/1000000.0 + "ms");        
+        System.out.println("Elapsed time = " + (System.nanoTime() - fullStart)/1000000000.0 + "sec");        
+        System.out.println("Average time for one iteration = " + elapsedTime/100000000.0 + "ms");        
    }
    
-   public static void test2(RangeFilter filter, CashAccountRow [] table)
+   public static void test2()
    {
-       
-        long start = System.nanoTime();            
-        int result = CashAccountRow.rowsInCondition(filter, table);
-        long elapsedTime = System.nanoTime() - start;
+        long elapsedTime = 0;
+        long result = 0; 
+        System.out.println("========== Test2 ==========");
+        long fullStart = System.nanoTime();        
+        for ( int z = 0; z < 100; z++ ) {
+
+            Runtime.getRuntime().gc();
+            CashAccountRow [] table = CashAccountRow.generateTable (10000000);
+            RangeFilter filter = RangeFilter.generateRangeFilter();
+            long start = System.nanoTime();  
+
+            result += CashAccountRow.rowsInCondition(filter, table);
+            
+            elapsedTime += System.nanoTime() - start;
+            if (z % 10 == 0 && z > 0)
+                System.out.print("" + z + "%....");
+        }
+    
         System.out.println("Result = " + result);
-        System.out.println("Elapsed time = " + elapsedTime/1000000.0 + "ms");
-   }
+        System.out.println("Elapsed time = " + (System.nanoTime() - fullStart)/1000000000.0 + "sec");        
+        System.out.println("Average time for one iteration = " + elapsedTime/100000000.0 + "ms");       }
    
    public static void main (String[] agrs)
    {
-        double usedMemory;
-        
-        System.out.println("Generating table");
-        CashAccountRow [] table = CashAccountRow.generateTable (10000000);         
-        
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        //Runtime.getRuntime().gc();
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        
-        //System.out.println("Generating filter");
-        RangeFilter filter = RangeFilter.generateRangeFilter();
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        //Runtime.getRuntime().gc();
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        
-        System.out.println("test1");
-        test1(filter, table);        
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        //Runtime.getRuntime().gc();
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-
-
-
-        //System.out.println("test2");
-        //test2(filter, table);        
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
-        //Runtime.getRuntime().gc();
-        //usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000.0;
-        //System.out.println("Memory used " + usedMemory + "MB");
+        test1();        
+        test2();        
    }
 }
