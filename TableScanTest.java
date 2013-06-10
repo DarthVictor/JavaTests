@@ -95,7 +95,7 @@ class RangeFilter
 }
 
 
-public class Test
+public class TableScanTest
 {
    public static void test1()
    {
